@@ -10,6 +10,7 @@ from .compat import urlopen
 from .exceptions import RateBackendError
 from .models import RateSource, Rate
 from .settings import money_rates_settings
+from .utils import get_median_rate
 
 
 logger = logging.getLogger(__name__)
@@ -61,6 +62,19 @@ class BaseRateBackend(object):
 
             rate.value = value
             rate.save()
+
+        if money_rates_settings.MEDIAN_CURRENCY_CODES:
+            try:
+                rate = Rate.objects.get(source=source,
+                                        currency=money_rates_settings.MEDIAN_CURRENCY_CODE)
+            except Rate.DoesNotExist:
+                rate = Rate(source=source,
+                            currency=money_rates_settings.MEDIAN_CURRENCY_CODE)
+            rate.value = get_median_rate(
+                Rate.objects.filter(source=source,
+                                    money_rates_settings.MEDIAN_CURRENCY_CODE)
+            rate.save()
+
 
 
 class OpenExchangeBackend(BaseRateBackend):

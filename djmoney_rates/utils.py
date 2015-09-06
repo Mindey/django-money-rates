@@ -62,3 +62,12 @@ def convert_money(amount, currency_from, currency_to):
     """
     new_amount = base_convert_money(amount, currency_from, currency_to)
     return moneyed.Money(new_amount, currency_to)
+
+def get_median_rate(rates):
+    order = rates.order_by('value')
+    count = rates.count()
+    middle = count / 2
+    if count % 2 == 0:
+        return sum([obj['value'] for obj in order[middle:middle+2].values()])/2
+    elif count % 2 == 1:
+        return order[middle:middle+1][0].value
