@@ -70,9 +70,11 @@ class BaseRateBackend(object):
             except Rate.DoesNotExist:
                 rate = Rate(source=source,
                             currency=money_rates_settings.MEDIAN_CURRENCY_NAME)
-            rate.value = get_median_rate(
-                Rate.objects.filter(source=source,
-                                    currency__in=money_rates_settings.MEDIAN_CURRENCY_CODES)
+
+            rates = Rate.objects.filter(source=source,
+                                        currency__in=money_rates_settings.MEDIAN_CURRENCY_CODES)
+
+            rate.value = get_median_rate(rates)
             rate.save()
 
 
