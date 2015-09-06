@@ -6,8 +6,6 @@ from .exceptions import CurrencyConversionException
 from .models import Rate, RateSource
 from .settings import money_rates_settings
 
-import moneyed
-
 
 def get_rate(currency):
     """Returns the rate from the default currency to `currency`."""
@@ -32,7 +30,7 @@ def get_rate_source():
             "Please run python manage.py update_rates" % backend.get_source_name())
 
 
-def base_convert_money(amount, currency_from, currency_to):
+def convert_money(amount, currency_from, currency_to):
     """
     Convert 'amount' from 'currency_from' to 'currency_to'
     """
@@ -53,15 +51,6 @@ def base_convert_money(amount, currency_from, currency_to):
 
     # After finishing the operation, quantize down final amount to two points.
     return ((amount / rate_from) * rate_to).quantize(Decimal("1.00"))
-
-
-def convert_money(amount, currency_from, currency_to):
-    """
-    Convert 'amount' from 'currency_from' to 'currency_to' and return a Money
-    instance of the converted amount.
-    """
-    new_amount = base_convert_money(amount, currency_from, currency_to)
-    return moneyed.Money(new_amount, currency_to)
 
 def get_median_rate(rates):
     order = rates.order_by('value')

@@ -10,8 +10,6 @@ from djmoney_rates.models import RateSource, Rate
 from djmoney_rates.settings import money_rates_settings
 from djmoney_rates.utils import base_convert_money, convert_money
 
-import moneyed
-
 
 class TestMoneyConverter(unittest.TestCase):
     def setUp(self):
@@ -86,22 +84,3 @@ class TestMoneyConverter(unittest.TestCase):
             convert_money(10.0, "PLN", "EUR")
 
         self.assertIn("Rate for EUR in fake-backend do not exists", str(cm.exception))
-
-    def test_conversion_works_from_base_currency(self):
-        source = RateSource.objects.create(name="fake-backend", base_currency="USD")
-        Rate.objects.create(source=source, currency="USD", value=1)
-        Rate.objects.create(source=source, currency="EUR", value=0.74)
-
-        amount = convert_money(1, "USD", "EUR")
-        self.assertEqual(type(amount), moneyed.Money)
-        self.assertEqual(amount, moneyed.Money(Decimal("0.74"), "EUR"))
-
-    def test_conversion_is_working_from_other_currency(self):
-        source = RateSource.objects.create(name="fake-backend", base_currency="USD")
-        Rate.objects.create(source=source, currency="PLN", value=3.07)
-        Rate.objects.create(source=source, currency="EUR", value=0.74)
-
-        amount = convert_money(10.0, "PLN", "EUR")
-        self.assertEqual(amount, moneyed.Money(Decimal("2.41"), "EUR"))
-
-    
