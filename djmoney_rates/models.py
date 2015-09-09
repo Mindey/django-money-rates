@@ -20,10 +20,10 @@ class RateSource(models.Model):
 class Rate(models.Model):
     source = models.ForeignKey(RateSource)
     currency = models.CharField(max_length=3)
-    value = models.DecimalField(max_digits=20, decimal_places=6)
+    value = models.DecimalField(max_digits=20, decimal_places=8)
 
     class Meta:
         unique_together = ('source', 'currency')
 
     def __str__(self):
-        return _("%s at %.6f") % (self.currency, self.value)
+        return _("%s at %.8f") % (self.currency, self.value)
